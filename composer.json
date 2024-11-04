@@ -1,5 +1,5 @@
 {
-  "name": "tagrityhq/warps-sdk-php",
+  "name": "vleapgroup/warps-sdk-php",
   "description": "MultiversX Warps SDK for PHP",
   "scripts": {
     "test": "vendor/bin/pest",
@@ -8,12 +8,12 @@
   "license": "MIT",
   "autoload": {
     "psr-4": {
-      "MultiversX\\": "src"
+      "Vleap\\": "src"
     }
   },
   "autoload-dev": {
     "psr-4": {
-      "MultiversX\\Tests\\": "tests"
+      "Vleap\\Tests\\": "tests"
     }
   },
   "authors": [],
@@ -23,7 +23,8 @@
     "brick/math": "^0.12",
     "kornrunner/keccak": "^1.1",
     "illuminate/collections": "^10.0 || ^11.0",
-    "nesbot/carbon": "^2.66 || ^3.2"
+    "nesbot/carbon": "^2.66 || ^3.2",
+    "multiversx/mx-sdk-php": "^0.3.0"
   },
   "require-dev": {
     "pestphp/pest": "^2.25"
