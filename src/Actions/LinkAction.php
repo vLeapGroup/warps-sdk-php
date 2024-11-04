@@ -2,7 +2,7 @@
 
 namespace Vleap\Actions;
 
-use Vleap\Transformers\Actions\ActionLinkTransformer;
+use Vleap\Transformers\Actions\LinkActionTransformer;
 
 final class LinkAction implements IWarpAction
 {
@@ -15,6 +15,6 @@ final class LinkAction implements IWarpAction
 
     public function toArray(): array
     {
-        return ActionLinkTransformer::transform($this);
+        return LinkActionTransformer::transform($this);
     }
 }

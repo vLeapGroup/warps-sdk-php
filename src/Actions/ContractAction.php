@@ -4,7 +4,7 @@ namespace Vleap\Actions;
 
 use Brick\Math\BigInteger;
 use MultiversX\Address;
-use Vleap\Transformers\Actions\ActionContractTransformer;
+use Vleap\Transformers\Actions\ContractActionTransformer;
 
 final class ContractAction implements IWarpAction
 {
@@ -18,14 +18,10 @@ final class ContractAction implements IWarpAction
         public readonly array $args,
         public readonly BigInteger $gasLimit,
     ) {
-        $this->address = Address::zero();
-        $this->endpoint = null;
-        $this->args = [];
-        $this->gasLimit = BigInteger::zero();
     }
 
     public function toArray(): array
     {
-        return ActionContractTransformer::transform($this);
+        return ContractActionTransformer::transform($this);
     }
 }

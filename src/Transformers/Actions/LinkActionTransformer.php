@@ -4,7 +4,7 @@ namespace Vleap\Transformers\Actions;
 
 use Vleap\Actions\LinkAction;
 
-final class ActionLinkTransformer
+final class LinkActionTransformer
 {
     public static function transform(LinkAction $action): array
     {
