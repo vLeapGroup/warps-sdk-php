@@ -1,5 +1,5 @@
 {
-  "name": "vleapgroup/warps-sdk-php",
+  "name": "vleap/warps-sdk-php",
   "description": "MultiversX Warps SDK for PHP",
   "scripts": {
     "test": "vendor/bin/pest",
