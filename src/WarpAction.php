@@ -2,6 +2,7 @@
 
 namespace Vleap;
 
+use Brick\Math\BigInteger;
 use MultiversX\Address;
 use Vleap\Actions\ContractAction;
 use Vleap\Actions\LinkAction;
@@ -19,17 +20,17 @@ class WarpAction
         return new WarpAction($name, $description);
     }
 
-    public function contract(string|Address $address, ?string $endpoint = null): ContractAction
+    public function contract(string|Address $address, ?string $endpoint = null, array $args = [], int|BigInteger $gasLimit = ContractAction::DEFAULT_GAS_LIMIT): ContractAction
     {
         $address = $address instanceof Address
             ? $address
             : new Address($address);
 
-        return ContractAction::create($this->name, $this->description, $address, $endpoint);
+        return new ContractAction($this->name, $this->description, $address, $endpoint, $args, BigInteger::of($gasLimit));
     }
 
     public function link(string $url): LinkAction
     {
-        return LinkAction::create($this->name, $this->description, $url);
+        return new LinkAction($this->name, $this->description, $url);
     }
 }
