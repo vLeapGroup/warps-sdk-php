@@ -24,7 +24,7 @@ class WarpAction
     {
         $address = $address instanceof Address
             ? $address
-            : new Address($address);
+            : Address::newFromBech32($address);
 
         return new ContractAction($this->name, $this->description, $address, $endpoint, $args, BigInteger::of($gasLimit));
     }
