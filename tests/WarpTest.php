@@ -11,7 +11,7 @@ it('creates a basic warp', function () {
 
 it('adds an action to the warp', function () {
     $warp = Warp::create('test name', 'test description');
-    $action = new WarpAction('test action');
+    $action = WarpAction::create('test action')->link('https://example.com');
 
     $actual = $warp->addAction($action);
 

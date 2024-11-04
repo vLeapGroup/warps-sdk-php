@@ -2,9 +2,8 @@
 
 namespace Vleap;
 
-use Vleap\WarpAction;
-use MultiversX\Address;
 use Illuminate\Support\Collection;
+use Vleap\Actions\IWarpAction;
 use Vleap\Transformers\WarpTransformer;
 
 class Warp
@@ -12,7 +11,7 @@ class Warp
     public function __construct(
         public readonly string $name,
         public readonly ?string $description = null,
-        /** @var Collection<Action> */
+        /** @var Collection<IWarpAction> */
         public readonly Collection $actions = new Collection,
     ) {
     }
@@ -22,7 +21,7 @@ class Warp
         return new Warp($title, $description);
     }
 
-    public function addAction(WarpAction $action): Warp
+    public function addAction(IWarpAction $action): Warp
     {
         $this->actions->push($action);
 

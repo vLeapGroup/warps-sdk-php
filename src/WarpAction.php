@@ -5,7 +5,6 @@ namespace Vleap;
 use MultiversX\Address;
 use Vleap\Actions\ContractAction;
 use Vleap\Actions\LinkAction;
-use Vleap\Transformers\ActionTransformer;
 
 class WarpAction
 {
@@ -15,22 +14,22 @@ class WarpAction
     ) {
     }
 
+    public static function create(string $name, ?string $description = null): WarpAction
+    {
+        return new WarpAction($name, $description);
+    }
+
     public function contract(string|Address $address, ?string $endpoint = null): ContractAction
     {
         $address = $address instanceof Address
             ? $address
             : new Address($address);
 
-        return ContractAction::create($address, $endpoint);
+        return ContractAction::create($this->name, $this->description, $address, $endpoint);
     }
 
-    public function link(string $url, string $label): LinkAction
+    public function link(string $url): LinkAction
     {
-        return LinkAction::create($url, $label);
-    }
-
-    public function toArray(): array
-    {
-        return ActionTransformer::transform($this);
+        return LinkAction::create($this->name, $this->description, $url);
     }
 }
