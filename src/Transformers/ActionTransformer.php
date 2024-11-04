@@ -2,11 +2,11 @@
 
 namespace Vleap\Transformers;
 
-use Vleap\Action;
+use Vleap\WarpAction;
 
-class ActionTransformer
+final class ActionTransformer
 {
-    public static function transform(Action $action): array
+    public static function transform(WarpAction $action): array
     {
         return [
             'name' => $action->name,

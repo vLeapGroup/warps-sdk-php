@@ -2,7 +2,7 @@
 
 namespace Vleap;
 
-use Vleap\Action;
+use Vleap\WarpAction;
 use MultiversX\Address;
 use Illuminate\Support\Collection;
 use Vleap\Transformers\WarpTransformer;
@@ -17,13 +17,16 @@ class Warp
     ) {
     }
 
-    public function newContract(string|Address $address): Warp
+    public static function create(string $title, ?string $description = null): Warp
     {
-        $address = $address instanceof Address
-            ? $address
-            : Address::newFromBech32($address);
+        return new Warp($title, $description);
+    }
 
-        return new Warp($address);
+    public function addAction(WarpAction $action): Warp
+    {
+        $this->actions->push($action);
+
+        return $this;
     }
 
     public function toArray(): array

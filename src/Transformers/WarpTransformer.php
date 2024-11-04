@@ -2,10 +2,10 @@
 
 namespace Vleap\Transformers;
 
-use Vleap\Action;
+use Vleap\WarpAction;
 use Vleap\Warp;
 
-class WarpTransformer
+final class WarpTransformer
 {
     public static function transform(Warp $warp): array
     {
@@ -13,7 +13,7 @@ class WarpTransformer
             'name' => $warp->name,
             'description' => $warp->description,
             'actions' => $warp->actions
-                ->map(fn (Action $action) => $action->toArray())
+                ->map(fn (WarpAction $action) => $action->toArray())
                 ->toArray(),
         ];
     }
