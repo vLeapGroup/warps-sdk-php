@@ -1,7 +1,8 @@
 <?php
 
-use MultiversX\Address;
 use Vleap\WarpAction;
+use MultiversX\Address;
+use Vleap\Actions\ActionType;
 
 it('transforms a contract action', function () {
     $address = Address::zero();
@@ -9,9 +10,9 @@ it('transforms a contract action', function () {
         ->toArray();
 
     expect($action)->toBe([
+        'type' => ActionType::Contract->value,
         'name' => 'test action',
         'description' => null,
-        'type' => 'contract',
         'address' => '0000000000000000000000000000000000000000000000000000000000000000',
         'endpoint' => 'test endpoint',
         'args' => ['test arg'],

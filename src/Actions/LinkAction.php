@@ -13,6 +13,11 @@ final class LinkAction implements IWarpAction
     ) {
     }
 
+    public function getType(): ActionType
+    {
+        return ActionType::Link;
+    }
+
     public function toArray(): array
     {
         return LinkActionTransformer::transform($this);

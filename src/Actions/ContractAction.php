@@ -20,6 +20,11 @@ final class ContractAction implements IWarpAction
     ) {
     }
 
+    public function getType(): ActionType
+    {
+        return ActionType::Contract;
+    }
+
     public function toArray(): array
     {
         return ContractActionTransformer::transform($this);

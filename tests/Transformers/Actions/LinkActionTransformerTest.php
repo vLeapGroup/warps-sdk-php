@@ -1,5 +1,6 @@
 <?php
 
+use Vleap\Actions\ActionType;
 use Vleap\WarpAction;
 
 it('transforms a link action', function () {
@@ -7,9 +8,9 @@ it('transforms a link action', function () {
         ->toArray();
 
     expect($action)->toBe([
+        'type' => ActionType::Link->value,
         'name' => 'test action',
         'description' => null,
-        'type' => 'link',
         'url' => 'https://example.com',
     ]);
 });

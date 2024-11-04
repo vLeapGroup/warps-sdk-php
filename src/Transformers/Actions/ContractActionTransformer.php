@@ -9,9 +9,9 @@ final class ContractActionTransformer
     public static function transform(ContractAction $action): array
     {
         return [
+            'type' => $action->getType()->value,
             'name' => $action->name,
             'description' => $action->description,
-            'type' => 'contract',
             'address' => $action->address->hex(),
             'endpoint' => $action->endpoint,
             'args' => $action->args,

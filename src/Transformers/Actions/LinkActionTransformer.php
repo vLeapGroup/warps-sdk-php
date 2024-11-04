@@ -9,9 +9,9 @@ final class LinkActionTransformer
     public static function transform(LinkAction $action): array
     {
         return [
+            'type' => $action->getType()->value,
             'name' => $action->name,
             'description' => $action->description,
-            'type' => 'link',
             'url' => $action->url,
         ];
     }
