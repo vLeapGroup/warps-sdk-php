@@ -10,22 +10,12 @@ class Warp
 {
     public function __construct(
         public readonly string $name,
-        public readonly ?string $description = null,
+        public readonly string $title,
+        public readonly ?string $description,
+        public readonly string $preview,
         /** @var Collection<IWarpAction> */
         public readonly Collection $actions = new Collection,
     ) {
-    }
-
-    public static function create(string $title, ?string $description = null): Warp
-    {
-        return new Warp($title, $description);
-    }
-
-    public function addAction(IWarpAction $action): Warp
-    {
-        $this->actions->push($action);
-
-        return $this;
     }
 
     public function toArray(): array

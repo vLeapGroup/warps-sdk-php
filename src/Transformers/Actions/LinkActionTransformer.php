@@ -10,7 +10,7 @@ final class LinkActionTransformer
     {
         return [
             'type' => $action->getType()->value,
-            'name' => $action->name,
+            'label' => $action->label,
             'description' => $action->description,
             'url' => $action->url,
         ];

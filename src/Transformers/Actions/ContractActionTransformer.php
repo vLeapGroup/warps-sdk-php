@@ -10,7 +10,7 @@ final class ContractActionTransformer
     {
         return [
             'type' => $action->getType()->value,
-            'name' => $action->name,
+            'label' => $action->label,
             'description' => $action->description,
             'address' => $action->address->hex(),
             'endpoint' => $action->endpoint,

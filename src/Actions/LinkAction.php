@@ -7,7 +7,7 @@ use Vleap\Transformers\Actions\LinkActionTransformer;
 final class LinkAction implements IWarpAction
 {
     public function __construct(
-        public readonly string $name,
+        public readonly string $label,
         public readonly ?string $description,
         public readonly string $url,
     ) {

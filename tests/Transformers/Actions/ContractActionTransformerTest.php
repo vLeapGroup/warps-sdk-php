@@ -11,7 +11,7 @@ it('transforms a contract action', function () {
 
     expect($action)->toBe([
         'type' => ActionType::Contract->value,
-        'name' => 'test action',
+        'label' => 'test action',
         'description' => null,
         'address' => '0000000000000000000000000000000000000000000000000000000000000000',
         'endpoint' => 'test endpoint',

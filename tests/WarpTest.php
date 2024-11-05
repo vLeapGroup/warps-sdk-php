@@ -2,18 +2,25 @@
 
 use Vleap\Warp;
 use Vleap\WarpAction;
+use Vleap\WarpBuilder;
 
 it('creates a basic warp', function () {
-    $actual = Warp::create('test name', 'test description');
+    $actual = (new WarpBuilder('test name'))
+        ->setTitle('test title')
+        ->setDescription('test description')
+        ->setPreview('https://abc.com/preview.png')
+        ->build();
 
     expect($actual)->toBeInstanceOf(Warp::class);
 });
 
 it('adds an action to the warp', function () {
-    $warp = Warp::create('test name', 'test description');
-    $action = WarpAction::create('test action')->link('https://example.com');
-
-    $actual = $warp->addAction($action);
+    $actual = (new WarpBuilder('test name'))
+        ->setTitle('test title')
+        ->setDescription('test description')
+        ->setPreview('https://abc.com/preview.png')
+        ->addAction($action = WarpAction::create('test action')->link('https://example.com'))
+        ->build();
 
     expect($actual)->toBeInstanceOf(Warp::class);
     expect($actual->actions->count())->toBe(1);

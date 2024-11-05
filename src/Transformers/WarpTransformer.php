@@ -3,7 +3,6 @@
 namespace Vleap\Transformers;
 
 use Vleap\Actions\IWarpAction;
-use Vleap\WarpAction;
 use Vleap\Warp;
 
 final class WarpTransformer
@@ -12,7 +11,9 @@ final class WarpTransformer
     {
         return [
             'name' => $warp->name,
+            'title' => $warp->title,
             'description' => $warp->description,
+            'preview' => $warp->preview,
             'actions' => $warp->actions
                 ->map(fn (IWarpAction $action) => $action->toArray())
                 ->toArray(),

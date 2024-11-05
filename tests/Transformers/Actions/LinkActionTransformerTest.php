@@ -9,7 +9,7 @@ it('transforms a link action', function () {
 
     expect($action)->toBe([
         'type' => ActionType::Link->value,
-        'name' => 'test action',
+        'label' => 'test action',
         'description' => null,
         'url' => 'https://example.com',
     ]);
