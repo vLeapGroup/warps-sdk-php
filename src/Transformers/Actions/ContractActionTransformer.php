@@ -12,7 +12,7 @@ final class ContractActionTransformer
             'type' => $action->getType()->value,
             'label' => $action->label,
             'description' => $action->description,
-            'address' => $action->address->hex(),
+            'address' => $action->address->bech32(),
             'endpoint' => $action->endpoint,
             'args' => $action->args,
             'gasLimit' => (string) $action->gasLimit,
