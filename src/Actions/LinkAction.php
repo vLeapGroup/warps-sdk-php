@@ -2,7 +2,7 @@
 
 namespace Vleap\Actions;
 
-use Vleap\Transformers\Actions\LinkActionTransformer;
+use Illuminate\Support\Collection;
 
 final class LinkAction implements IWarpAction
 {
@@ -10,16 +10,13 @@ final class LinkAction implements IWarpAction
         public readonly string $label,
         public readonly ?string $description,
         public readonly string $url,
+        /** @var Collection<WarpActionInput> */
+        public readonly Collection $inputs = new Collection,
     ) {
     }
 
     public function getType(): ActionType
     {
         return ActionType::Link;
-    }
-
-    public function toArray(): array
-    {
-        return LinkActionTransformer::transform($this);
     }
 }

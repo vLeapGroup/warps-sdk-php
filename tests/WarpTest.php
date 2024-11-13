@@ -5,7 +5,8 @@ use Vleap\WarpAction;
 use Vleap\WarpBuilder;
 
 it('creates a basic warp', function () {
-    $actual = (new WarpBuilder('test name'))
+    $actual = (new WarpBuilder)
+        ->setName('test name')
         ->setTitle('test title')
         ->setDescription('test description')
         ->setPreview('https://abc.com/preview.png')
@@ -15,7 +16,8 @@ it('creates a basic warp', function () {
 });
 
 it('adds an action to the warp', function () {
-    $actual = (new WarpBuilder('test name'))
+    $actual = (new WarpBuilder)
+        ->setName('test name')
         ->setTitle('test title')
         ->setDescription('test description')
         ->setPreview('https://abc.com/preview.png')

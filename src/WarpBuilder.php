@@ -9,19 +9,39 @@ use Vleap\Transformers\WarpTransformer;
 
 class WarpBuilder
 {
-    public readonly string $name;
-    public readonly string $title;
-    public readonly ?string $description;
-    public readonly string $preview;
+    public string $protocol;
+    public string $name;
+    public string $title;
+    public ?string $description;
+    public string $preview;
     /** @var Collection<IWarpAction> */
-    public readonly Collection $actions;
+    public Collection $actions;
 
-    public function __construct(string $name)
+    const LATEST_PROTOCOL_IDENTIFIER = 'warp:0.1.0';
+
+    public function __construct()
     {
-        $this->ensureIsSet($name, 'name is required');
-
-        $this->name = $name;
+        $this->protocol = self::LATEST_PROTOCOL_IDENTIFIER;
         $this->actions = new Collection;
+    }
+
+    public static function createFromRaw(array $data): Warp
+    {
+        return WarpTransformer::fromArray($data);
+    }
+
+    public function setProtocol(string $protocol): WarpBuilder
+    {
+        $this->protocol = $protocol;
+
+        return $this;
+    }
+
+    public function setName(string $name): WarpBuilder
+    {
+        $this->name = $name;
+
+        return $this;
     }
 
     public function setTitle(string $title): WarpBuilder
@@ -54,10 +74,11 @@ class WarpBuilder
 
     public function build(): Warp
     {
+        $this->ensureIsSet($this->name, 'name is required');
         $this->ensureIsSet($this->title, 'title is required');
         $this->ensureIsSet($this->preview, 'preview is required');
 
-        return new Warp($this->name, $this->title, $this->description, $this->preview, $this->actions);
+        return new Warp($this->protocol, $this->name, $this->title, $this->description, $this->preview, $this->actions);
     }
 
     private function ensureIsSet(string $value, string $message): void
