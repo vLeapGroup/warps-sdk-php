@@ -26,7 +26,7 @@ final class ContractActionTransformer
     {
         return new ContractAction(
             label: $data['label'],
-            description: $data['description'],
+            description: $data['description'] ?? null,
             address: Address::newFromBech32($data['address']),
             func: $data['func'],
             args: $data['args'],
