@@ -6,6 +6,7 @@ use Brick\Math\BigInteger;
 use MultiversX\Address;
 use Vleap\Actions\ContractAction;
 use Vleap\Actions\LinkAction;
+use Vleap\Actions\QueryAction;
 
 class WarpAction
 {
@@ -27,6 +28,15 @@ class WarpAction
             : Address::newFromBech32($address);
 
         return new ContractAction($this->name, $this->description, $address, $endpoint, $args, BigInteger::of($value), BigInteger::of($gasLimit));
+    }
+
+    public function query(string|Address $address, string $func, array $args, ?string $abi = null): QueryAction
+    {
+        $address = $address instanceof Address
+            ? $address
+            : Address::newFromBech32($address);
+
+        return new QueryAction($this->name, $this->description, $address, $func, $args, $abi);
     }
 
     public function link(string $url): LinkAction

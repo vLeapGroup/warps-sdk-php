@@ -22,6 +22,7 @@ final class ActionTransformer
     {
         return match ($data['type']) {
             ActionType::Contract->value => ContractActionTransformer::fromArray($data),
+            ActionType::Query->value => QueryActionTransformer::fromArray($data),
             ActionType::Link->value => LinkActionTransformer::fromArray($data),
             default => throw new Exception("unsupported action type: {$data['type']}"),
         };
