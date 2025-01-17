@@ -2,7 +2,6 @@
 
 namespace Vleap\Warps;
 
-use MultiversX\Token;
 use MultiversX\Address;
 use Brick\Math\BigInteger;
 use MultiversX\TokenTransfer;
@@ -31,7 +30,6 @@ use MultiversX\SmartContracts\Typesystem\Types\StructType;
 use MultiversX\SmartContracts\Typesystem\CodeMetadataValue;
 use MultiversX\SmartContracts\Typesystem\Types\BigUIntType;
 use MultiversX\SmartContracts\Typesystem\Types\OptionalType;
-use MultiversX\SmartContracts\Typesystem\Types\VariadicType;
 use MultiversX\SmartContracts\Typesystem\Types\CompositeType;
 use MultiversX\SmartContracts\Typesystem\TokenIdentifierValue;
 use MultiversX\SmartContracts\Typesystem\Types\FieldDefinition;
