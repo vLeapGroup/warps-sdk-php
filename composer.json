@@ -7,6 +7,9 @@
   },
   "license": "MIT",
   "autoload": {
+    "files": [
+      "src/functions.php"
+    ],
     "psr-4": {
       "Vleap\\Warps\\": "src"
     }
