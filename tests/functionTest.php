@@ -10,7 +10,7 @@ use function Vleap\Warps\{
     list_of,
     nothing,
     option_of,
-    optional_pf,
+    optional_of,
     string,
     token,
     u16,
@@ -59,13 +59,13 @@ describe('Codec Utilities', function () {
     describe('optional', function () {
         it('creates an OptionalValue with value', function () {
             $stringValue = string('hello');
-            $result = optional_pf($stringValue);
+            $result = optional_of($stringValue);
             expect($result)->toBeInstanceOf(OptionalValue::class);
             expect($result->valueOf())->toBe('hello');
         });
 
         it('creates an OptionalValue with missing value', function () {
-            $result = optional_pf(null);
+            $result = optional_of(null);
             expect($result)->toBeInstanceOf(OptionalValue::class);
             expect($result->isSet())->toBeFalse();
         });

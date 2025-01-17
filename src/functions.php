@@ -40,7 +40,7 @@ function option_of(?TypedValue $value): OptionValue
     return $value ? OptionValue::newProvided($value) : OptionValue::newMissing();
 }
 
-function optional_pf(?TypedValue $value): OptionalValue
+function optional_of(?TypedValue $value): OptionalValue
 {
     return $value ? new OptionalValue(new OptionalType($value->getType()), $value) : OptionalValue::newMissing();
 }
