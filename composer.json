@@ -24,7 +24,7 @@
     "kornrunner/keccak": "^1.1",
     "illuminate/collections": "^10.0 || ^11.0",
     "nesbot/carbon": "^2.66 || ^3.2",
-    "multiversx/mx-sdk-php": "^0.3.0"
+    "multiversx/mx-sdk-php": "dev-main"
   },
   "require-dev": {
     "pestphp/pest": "^2.25"
@@ -33,5 +33,11 @@
     "allow-plugins": {
       "pestphp/pest-plugin": true
     }
-  }
+  },
+  "repositories": [
+    {
+      "type": "vcs",
+      "url": "https://github.com/michavie/mx-sdk-php.git"
+    }
+  ]
 }
