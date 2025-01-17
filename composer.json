@@ -8,12 +8,12 @@
   "license": "MIT",
   "autoload": {
     "psr-4": {
-      "Vleap\\": "src"
+      "Vleap\\Warps\\": "src"
     }
   },
   "autoload-dev": {
     "psr-4": {
-      "Vleap\\Tests\\": "tests"
+      "Vleap\\Warps\\Tests\\": "tests"
     }
   },
   "authors": [],

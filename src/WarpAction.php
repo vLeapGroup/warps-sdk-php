@@ -1,12 +1,12 @@
 <?php
 
-namespace Vleap;
+namespace Vleap\Warps;
 
 use Brick\Math\BigInteger;
 use MultiversX\Address;
-use Vleap\Actions\ContractAction;
-use Vleap\Actions\LinkAction;
-use Vleap\Actions\QueryAction;
+use Vleap\Warps\Actions\ContractAction;
+use Vleap\Warps\Actions\LinkAction;
+use Vleap\Warps\Actions\QueryAction;
 
 class WarpAction
 {

@@ -1,8 +1,8 @@
 <?php
 
-use Vleap\Warp;
-use Vleap\WarpAction;
-use Vleap\WarpBuilder;
+use Vleap\Warps\Warp;
+use Vleap\Warps\WarpAction;
+use Vleap\Warps\WarpBuilder;
 
 it('creates a basic warp', function () {
     $actual = (new WarpBuilder)

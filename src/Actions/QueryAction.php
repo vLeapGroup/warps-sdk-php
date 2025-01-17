@@ -1,6 +1,6 @@
 <?php
 
-namespace Vleap\Actions;
+namespace Vleap\Warps\Actions;
 
 use MultiversX\Address;
 use Illuminate\Support\Collection;

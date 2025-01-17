@@ -1,10 +1,10 @@
 <?php
 
 use Brick\Math\BigInteger;
-use Vleap\WarpAction;
+use Vleap\Warps\WarpAction;
 use MultiversX\Address;
-use Vleap\Actions\ActionType;
-use Vleap\Transformers\Actions\ContractActionTransformer;
+use Vleap\Warps\Actions\ActionType;
+use Vleap\Warps\Transformers\Actions\ContractActionTransformer;
 
 it('transforms a contract action', function () {
     $address = Address::zero();

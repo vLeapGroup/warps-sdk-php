@@ -1,6 +1,6 @@
 <?php
 
-namespace Vleap;
+namespace Vleap\Warps;
 
 use Illuminate\Support\Collection;
 

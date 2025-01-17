@@ -1,11 +1,11 @@
 <?php
 
-namespace Vleap;
+namespace Vleap\Warps;
 
 use Exception;
 use Illuminate\Support\Collection;
-use Vleap\Actions\IWarpAction;
-use Vleap\Transformers\WarpTransformer;
+use Vleap\Warps\Actions\IWarpAction;
+use Vleap\Warps\Transformers\WarpTransformer;
 
 class WarpBuilder
 {

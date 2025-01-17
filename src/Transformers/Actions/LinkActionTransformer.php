@@ -1,8 +1,8 @@
 <?php
 
-namespace Vleap\Transformers\Actions;
+namespace Vleap\Warps\Transformers\Actions;
 
-use Vleap\Actions\LinkAction;
+use Vleap\Warps\Actions\LinkAction;
 
 final class LinkActionTransformer
 {

@@ -1,10 +1,10 @@
 <?php
 
-use Vleap\Warp;
-use Vleap\WarpAction;
-use Vleap\WarpBuilder;
-use Vleap\Transformers\WarpTransformer;
-use Vleap\Transformers\Actions\ActionTransformer;
+use Vleap\Warps\Warp;
+use Vleap\Warps\WarpAction;
+use Vleap\Warps\WarpBuilder;
+use Vleap\Warps\Transformers\WarpTransformer;
+use Vleap\Warps\Transformers\Actions\ActionTransformer;
 
 it('transforms a warp', function () {
     $warp = (new WarpBuilder)

@@ -1,11 +1,11 @@
 <?php
 
-namespace Vleap\Transformers\Actions;
+namespace Vleap\Warps\Transformers\Actions;
 
 use Exception;
-use Vleap\Actions\ActionType;
-use Vleap\Actions\IWarpAction;
-use Vleap\WarpAction;
+use Vleap\Warps\Actions\ActionType;
+use Vleap\Warps\Actions\IWarpAction;
+use Vleap\Warps\WarpAction;
 
 final class ActionTransformer
 {

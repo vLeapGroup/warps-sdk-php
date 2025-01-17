@@ -1,6 +1,6 @@
 <?php
 
-namespace Vleap\Actions;
+namespace Vleap\Warps\Actions;
 
 interface IWarpAction
 {

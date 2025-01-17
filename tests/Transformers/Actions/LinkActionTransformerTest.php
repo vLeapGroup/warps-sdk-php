@@ -1,8 +1,8 @@
 <?php
 
-use Vleap\WarpAction;
-use Vleap\Actions\ActionType;
-use Vleap\Transformers\Actions\LinkActionTransformer;
+use Vleap\Warps\WarpAction;
+use Vleap\Warps\Actions\ActionType;
+use Vleap\Warps\Transformers\Actions\LinkActionTransformer;
 
 it('transforms a link action', function () {
     $action = WarpAction::create('test action')->link('https://example.com');

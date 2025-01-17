@@ -1,10 +1,9 @@
 <?php
 
-namespace Vleap\Transformers\Actions;
+namespace Vleap\Warps\Transformers\Actions;
 
-use Brick\Math\BigInteger;
 use MultiversX\Address;
-use Vleap\Actions\QueryAction;
+use Vleap\Warps\Actions\QueryAction;
 
 final class QueryActionTransformer
 {

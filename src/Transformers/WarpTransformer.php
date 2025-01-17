@@ -1,10 +1,10 @@
 <?php
 
-namespace Vleap\Transformers;
+namespace Vleap\Warps\Transformers;
 
-use Vleap\Actions\IWarpAction;
-use Vleap\Transformers\Actions\ActionTransformer;
-use Vleap\Warp;
+use Vleap\Warps\Actions\IWarpAction;
+use Vleap\Warps\Transformers\Actions\ActionTransformer;
+use Vleap\Warps\Warp;
 
 final class WarpTransformer
 {
