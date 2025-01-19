@@ -453,7 +453,12 @@ describe('stringToNative', function() {
         expect($this->serializer->stringToNative('uint8:255'))->toBe(['uint8', 255]);
         expect($this->serializer->stringToNative('uint16:789'))->toBe(['uint16', 789]);
         expect($this->serializer->stringToNative('uint32:456'))->toBe(['uint32', 456]);
-        expect($this->serializer->stringToNative('uint64:123'))->toBe(['uint64', 123]);
+    });
+
+    it('deserializes uint64 values', function() {
+        $result = $this->serializer->stringToNative('uint64:1234567890');
+        expect($result[0])->toBe('uint64');
+        expect((string) $result[1])->toBe('1234567890');
     });
 
     it('deserializes biguint values', function() {

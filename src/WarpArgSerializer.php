@@ -269,9 +269,9 @@ class WarpArgSerializer
             return ["composite:{$baseType}", $values];
         } elseif ($baseType === 'string') {
             return [$baseType, $val];
-        } elseif (in_array($baseType, ['uint8', 'uint16', 'uint32', 'uint64'])) {
-            return [$baseType, (int)$val];
-        } elseif ($baseType === 'biguint') {
+        } elseif (in_array($baseType, ['uint8', 'uint16', 'uint32'])) {
+            return [$baseType, (int) $val];
+        } elseif ($baseType === 'uint64' || $baseType === 'biguint') {
             return [$baseType, BigInteger::of($val ?: '0')];
         } elseif ($baseType === 'bool') {
             return [$baseType, $val === 'true'];
