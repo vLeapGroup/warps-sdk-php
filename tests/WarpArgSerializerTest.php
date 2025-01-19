@@ -559,6 +559,6 @@ describe('stringToTyped', function() {
 
     it('throws error for unsupported type', function() {
         expect(fn() => $this->serializer->stringToTyped('unsupported:value'))
-            ->toThrow('WarpArgSerializer (nativeToTyped): Unsupported input type: unsupported');
+            ->toThrow('WarpArgSerializer (stringToNative): Unsupported input type: unsupported');
     });
 });

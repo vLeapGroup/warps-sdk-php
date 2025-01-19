@@ -32,7 +32,6 @@ use MultiversX\SmartContracts\Typesystem\VariadicValue;
 use MultiversX\SmartContracts\Typesystem\CompositeValue;
 use MultiversX\SmartContracts\Typesystem\Types\ListType;
 use MultiversX\SmartContracts\Typesystem\Types\BytesType;
-use MultiversX\SmartContracts\Typesystem\Types\OptionType;
 use MultiversX\SmartContracts\Typesystem\Types\StringType;
 use MultiversX\SmartContracts\Typesystem\Types\StructType;
 use MultiversX\SmartContracts\Typesystem\CodeMetadataValue;
@@ -89,7 +88,7 @@ class WarpArgSerializer
             return new VariadicValue(new VariadicType($baseType), $typedValues);
         }
         else if ($baseType === 'composite') {
-            list(, $baseType) = explode(':', $type);
+            [$_, $baseType] = explode(':', $type);
             $rawValues = explode('|', $value);
             $rawTypes = explode('|', $baseType);
             $values = array_map(fn($val, $index) => $this->nativeToTyped($rawTypes[$index], $val), $rawValues, array_keys($rawValues));
@@ -115,7 +114,7 @@ class WarpArgSerializer
             return $value ? new BigUIntValue(BigInteger::of($value)) : new NothingValue();
         }
         else if ($baseType === 'bool') {
-            return $value ? new BooleanValue($value === true || $value === 'true') : new NothingValue();
+            return new BooleanValue($value === true || $value === 'true');
         }
         else if ($baseType === 'address') {
             return $value ? new AddressValue(Address::newFromBech32($value)) : new NothingValue();
@@ -235,10 +234,10 @@ class WarpArgSerializer
         $val = implode(':', array_slice($parts, 1));
 
         if ($baseType === 'option') {
-            list($baseType, $baseValue) = explode(':', $val);
+            [$baseType, $baseValue] = explode(':', $val);
             return ["option:{$baseType}", $baseValue ?: null];
         } elseif ($baseType === 'optional') {
-            list($baseType, $baseValue) = explode(':', $val);
+            [$baseType, $baseValue] = explode(':', $val);
             return ["optional:{$baseType}", $baseValue ?: null];
         } elseif ($baseType === 'list') {
             $listParts = explode(':', $val);
@@ -255,7 +254,7 @@ class WarpArgSerializer
             $values = array_map(fn($v) => $this->stringToNative("{$baseType}:{$v}")[1], $valuesStrings);
             return ["variadic:{$baseType}", $values];
         } elseif ($baseType === 'composite') {
-            list($baseType, $valuesRaw) = explode(':', $val);
+            [$baseType, $valuesRaw] = explode(':', $val);
             $rawTypes = explode('|', $baseType);
             $valuesStrings = explode('|', $valuesRaw);
             $values = array_map(fn($val, $index) => $this->stringToNative("{$rawTypes[$index]}:{$val}")[1], $valuesStrings, array_keys($valuesStrings));
@@ -277,7 +276,7 @@ class WarpArgSerializer
         } elseif ($baseType === 'codemeta') {
             return [$baseType, $val];
         } elseif ($baseType === 'esdt') {
-            list($identifier, $nonce, $amount) = explode('|', $val);
+            [$identifier, $nonce, $amount] = explode('|', $val);
             return [$baseType, new TokenTransfer(
                 token: new Token(identifier: $identifier, nonce: BigInteger::of($nonce)),
                 amount: BigInteger::of($amount)
@@ -289,7 +288,7 @@ class WarpArgSerializer
 
     public function stringToTyped(string $value): TypedValue
     {
-        [$type, $val] = explode(':', $value, 2);
+        [$type, $val] = $this->stringToNative($value);
 
         return $this->nativeToTyped($type, $val);
     }
