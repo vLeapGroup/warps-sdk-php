@@ -96,36 +96,45 @@ class WarpArgSerializer
             $types = array_map(fn($type) => $this->nativeToType($type), $rawTypes);
             return new CompositeValue(new CompositeType(...$types), $values);
         }
-
-        switch ($type) {
-            case 'string':
-                return $value ? StringValue::fromUTF8($value) : new NothingValue();
-            case 'uint8':
-                return $value ? new U8Value((int)$value) : new NothingValue();
-            case 'uint16':
-                return $value ? new U16Value((int)$value) : new NothingValue();
-            case 'uint32':
-                return $value ? new U32Value((int)$value) : new NothingValue();
-            case 'uint64':
-                return $value ? new U64Value(BigInteger::of($value)) : new NothingValue();
-            case 'biguint':
-                return $value ? new BigUIntValue(BigInteger::of($value)) : new NothingValue();
-            case 'bool':
-                return $value ? new BooleanValue($value === true || $value === 'true') : new NothingValue();
-            case 'address':
-                return $value ? new AddressValue(Address::newFromBech32($value)) : new NothingValue();
-            case 'token':
-                return $value ? new TokenIdentifierValue($value) : new NothingValue();
-            case 'hex':
-                return $value ? BytesValue::fromHex($value) : new NothingValue();
-            case 'codemeta':
-                return new CodeMetadataValue(CodeMetadata::fromBuffer(hex2bin($value)));
-            case 'esdt':
-                return new Struct($this->nativeToType('esdt'), [
-                    new Field(new TokenIdentifierValue($value->token->identifier), 'token_identifier'),
-                    new Field(new U64Value($value->token->nonce), 'token_nonce'),
-                    new Field(new BigUIntValue($value->amount), 'amount'),
-                ]);
+        else if ($baseType === 'string') {
+            return $value ? StringValue::fromUTF8($value) : new NothingValue();
+        }
+        else if ($baseType === 'uint8') {
+            return $value ? new U8Value((int)$value) : new NothingValue();
+        }
+        else if ($baseType === 'uint16') {
+            return $value ? new U16Value((int)$value) : new NothingValue();
+        }
+        else if ($baseType === 'uint32') {
+            return $value ? new U32Value((int)$value) : new NothingValue();
+        }
+        else if ($baseType === 'uint64') {
+            return $value ? new U64Value(BigInteger::of($value)) : new NothingValue();
+        }
+        else if ($baseType === 'biguint') {
+            return $value ? new BigUIntValue(BigInteger::of($value)) : new NothingValue();
+        }
+        else if ($baseType === 'bool') {
+            return $value ? new BooleanValue($value === true || $value === 'true') : new NothingValue();
+        }
+        else if ($baseType === 'address') {
+            return $value ? new AddressValue(Address::newFromBech32($value)) : new NothingValue();
+        }
+        else if ($baseType === 'token') {
+            return $value ? new TokenIdentifierValue($value) : new NothingValue();
+        }
+        else if ($baseType === 'hex') {
+            return $value ? BytesValue::fromHex($value) : new NothingValue();
+        }
+        else if ($baseType === 'codemeta') {
+            return new CodeMetadataValue(CodeMetadata::fromBuffer(hex2bin($value)));
+        }
+        else if ($baseType === 'esdt') {
+            return new Struct($this->nativeToType('esdt'), [
+                new Field(new TokenIdentifierValue($value->token->identifier), 'token_identifier'),
+                new Field(new U64Value($value->token->nonce), 'token_nonce'),
+                new Field(new BigUIntValue($value->amount), 'amount'),
+            ]);
         }
 
         throw new \Exception("WarpArgSerializer (nativeToTyped): Unsupported input type: {$type}");
@@ -140,32 +149,28 @@ class WarpArgSerializer
             [$type, $val] = $this->typedToNative($value->getTypedValue());
             return ["option:{$type}", $val];
         }
-
-        if ($value->hasClassOrSuperclass(OptionalValue::ClassName)) {
+        else if ($value->hasClassOrSuperclass(OptionalValue::ClassName)) {
             if (!$value->isSet()) {
                 return ['optional', null];
             }
             [$type, $val] = $this->typedToNative($value->getTypedValue());
             return ["optional:{$type}", $val];
         }
-
-        if ($value->hasClassOrSuperclass(ListValue::ClassName)) {
+        else if ($value->hasClassOrSuperclass(ListValue::ClassName)) {
             $items = $value->getItems();
             $types = array_map(fn($item) => $this->typedToNative($item)[0], $items);
             $type = $types[0];
             $values = array_map(fn($item) => $this->typedToNative($item)[1], $items);
             return ["list:{$type}", implode(',', $values)];
         }
-
-        if ($value->hasClassOrSuperclass(VariadicValue::ClassName)) {
+        else if ($value->hasClassOrSuperclass(VariadicValue::ClassName)) {
             $items = $value->getItems();
             $types = array_map(fn($item) => $this->typedToNative($item)[0], $items);
             $type = $types[0];
             $values = array_map(fn($item) => $this->typedToNative($item)[1], $items);
             return ["variadic:{$type}", implode(',', $values)];
         }
-
-        if ($value->hasClassOrSuperclass(CompositeValue::ClassName)) {
+        else if ($value->hasClassOrSuperclass(CompositeValue::ClassName)) {
             $items = $value->getItems();
             $types = array_map(fn($item) => $this->typeToNative($item->getType()), $items);
             $values = array_map(fn($item) => $item->valueOf(), $items);
@@ -173,52 +178,40 @@ class WarpArgSerializer
             $rawValues = implode('|', $values);
             return ["composite:{$rawTypes}", $rawValues];
         }
-
-        if ($value->hasClassOrSuperclass(BigUIntValue::ClassName)) {
+        else if ($value->hasClassOrSuperclass(BigUIntValue::ClassName)) {
             return ['biguint', (string) $value->valueOf()];
         }
-
-        if ($value->hasClassOrSuperclass(U8Value::ClassName)) {
+        else if ($value->hasClassOrSuperclass(U8Value::ClassName)) {
             return ['uint8', $value->valueOf()->toInt()];
         }
-
-        if ($value->hasClassOrSuperclass(U16Value::ClassName)) {
+        else if ($value->hasClassOrSuperclass(U16Value::ClassName)) {
             return ['uint16', $value->valueOf()->toInt()];
         }
-
-        if ($value->hasClassOrSuperclass(U32Value::ClassName)) {
+        else if ($value->hasClassOrSuperclass(U32Value::ClassName)) {
             return ['uint32', $value->valueOf()->toInt()];
         }
-
-        if ($value->hasClassOrSuperclass(U64Value::ClassName)) {
+        else if ($value->hasClassOrSuperclass(U64Value::ClassName)) {
             return ['uint64', (string) $value->valueOf()];
         }
-
-        if ($value->hasClassOrSuperclass(StringValue::ClassName)) {
+        else if ($value->hasClassOrSuperclass(StringValue::ClassName)) {
             return ['string', $value->valueOf()];
         }
-
-        if ($value->hasClassOrSuperclass(BooleanValue::ClassName)) {
+        else if ($value->hasClassOrSuperclass(BooleanValue::ClassName)) {
             return ['bool', $value->valueOf()];
         }
-
-        if ($value->hasClassOrSuperclass(AddressValue::ClassName)) {
+        else if ($value->hasClassOrSuperclass(AddressValue::ClassName)) {
             return ['address', $value->valueOf()->bech32()];
         }
-
-        if ($value->hasClassOrSuperclass(TokenIdentifierValue::ClassName)) {
+        else if ($value->hasClassOrSuperclass(TokenIdentifierValue::ClassName)) {
             return ['token', $value->valueOf()];
         }
-
-        if ($value->hasClassOrSuperclass(BytesValue::ClassName)) {
+        else if ($value->hasClassOrSuperclass(BytesValue::ClassName)) {
             return ['hex', bin2hex($value->valueOf())];
         }
-
-        if ($value->hasClassOrSuperclass(CodeMetadataValue::ClassName)) {
+        else if ($value->hasClassOrSuperclass(CodeMetadataValue::ClassName)) {
             return ['codemeta', bin2hex($value->valueOf()->toBuffer())];
         }
-
-        if ($value->getType()->getName() === 'EsdtTokenPayment') {
+        else if ($value->getType()->getName() === 'EsdtTokenPayment') {
             $identifier = $value->getFieldValue('token_identifier');
             $nonce = $value->getFieldValue('token_nonce');
             $amount = $value->getFieldValue('amount');
@@ -303,36 +296,45 @@ class WarpArgSerializer
 
     public function nativeToType(string $type): Type
     {
-        switch ($type) {
-            case 'string':
-                return new StringType();
-            case 'uint8':
-                return new U8Type();
-            case 'uint16':
-                return new U16Type();
-            case 'uint32':
-                return new U32Type();
-            case 'uint64':
-                return new U64Type();
-            case 'biguint':
-                return new BigUIntType();
-            case 'bool':
-                return new BooleanType();
-            case 'address':
-                return new AddressType();
-            case 'token':
-                return new TokenIdentifierType();
-            case 'hex':
-                return new BytesType();
-            case 'codemeta':
-                return new CodeMetadataType();
-            case 'esdt':
-            case 'nft':
-                return new StructType('EsdtTokenPayment', [
-                    new FieldDefinition('token_identifier', '', new TokenIdentifierType()),
-                    new FieldDefinition('token_nonce', '', new U64Type()),
-                    new FieldDefinition('amount', '', new BigUIntType()),
-                ]);
+        if ($type === 'string') {
+            return new StringType();
+        }
+        else if ($type === 'uint8') {
+            return new U8Type();
+        }
+        else if ($type === 'uint16') {
+            return new U16Type();
+        }
+        else if ($type === 'uint32') {
+            return new U32Type();
+        }
+        else if ($type === 'uint64') {
+            return new U64Type();
+        }
+        else if ($type === 'biguint') {
+            return new BigUIntType();
+        }
+        else if ($type === 'bool') {
+            return new BooleanType();
+        }
+        else if ($type === 'address') {
+            return new AddressType();
+        }
+        else if ($type === 'token') {
+            return new TokenIdentifierType();
+        }
+        else if ($type === 'hex') {
+            return new BytesType();
+        }
+        else if ($type === 'codemeta') {
+            return new CodeMetadataType();
+        }
+        else if ($type === 'esdt') {
+            return new StructType('EsdtTokenPayment', [
+                new FieldDefinition('token_identifier', '', new TokenIdentifierType()),
+                new FieldDefinition('token_nonce', '', new U64Type()),
+                new FieldDefinition('amount', '', new BigUIntType()),
+            ]);
         }
 
         throw new \Exception("WarpArgSerializer (nativeToType): Unsupported input type: {$type}");
