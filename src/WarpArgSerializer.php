@@ -46,237 +46,182 @@ use MultiversX\SmartContracts\Typesystem\Types\CodeMetadataType;
 use MultiversX\SmartContracts\Typesystem\Types\OptionalType;
 use MultiversX\SmartContracts\Typesystem\Types\TokenIdentifierType;
 
+const ParamsSeparator = ':';
+const CompositeSeparator = '|';
+
 class WarpArgSerializer
 {
     public function nativeToString(string $type, mixed $value): string
     {
         if ($type === 'esdt' && $value instanceof TokenTransfer) {
             return "esdt:{$value->token->identifier}|{$value->token->nonce}|{$value->amount}";
-        } else if ($type === 'bool') {
-            return 'bool:' . ($value ? 'true' : 'false');
         }
-
-        return "{$type}:" . ($value ? (string)$value : '');
+        if ($type === 'bool') {
+            return "{$type}:" . ($value ? 'true' : 'false');
+        }
+        return "{$type}:" . ($value ?? '');
     }
 
     public function nativeToTyped(string $type, mixed $value): TypedValue
     {
-        $typeParts = explode(':', $type);
-        $baseType = $typeParts[0];
-
-        if ($baseType === 'option') {
-            $baseType = $typeParts[1];
-            $baseValue = $this->nativeToTyped($baseType, $value);
-            return $value ? OptionValue::newProvided($baseValue) : OptionValue::newMissingTyped($baseValue->getType());
-        }
-        else if ($baseType === 'optional') {
-            $baseType = $typeParts[1];
-            $baseValue = $this->nativeToTyped($baseType, $value);
-            return $value ? new OptionalValue(new OptionalType($baseValue->getType()), $baseValue) : OptionalValue::newMissing();
-        }
-        else if ($baseType === 'list') {
-            $baseType = $typeParts[1];
-            $values = $value ? explode(',', $value) : [];
-            $typedValues = array_map(fn($val) => $this->nativeToTyped($baseType, $val), $values);
-            return new ListValue(new ListType($this->nativeToType($baseType)), $typedValues);
-        }
-        else if ($baseType === 'variadic') {
-            $baseTypeNative = $typeParts[1];
-            $baseType = $this->nativeToType($baseTypeNative);
-            $values = $value ? explode(',', $value) : [];
-            $typedValues = array_map(fn($val) => $this->nativeToTyped($baseTypeNative, $val), $values);
-            return new VariadicValue(new VariadicType($baseType), $typedValues);
-        }
-        else if ($baseType === 'composite') {
-            [$_, $baseType] = explode(':', $type);
-            $rawValues = explode('|', $value);
-            $rawTypes = explode('|', $baseType);
-            $values = array_map(fn($val, $index) => $this->nativeToTyped($rawTypes[$index], $val), $rawValues, array_keys($rawValues));
-            $types = array_map(fn($type) => $this->nativeToType($type), $rawTypes);
-            return new CompositeValue(new CompositeType(...$types), $values);
-        }
-        else if ($baseType === 'string') {
-            return $value ? StringValue::fromUTF8($value) : new NothingValue();
-        }
-        else if ($baseType === 'uint8') {
-            return $value ? new U8Value((int)$value) : new NothingValue();
-        }
-        else if ($baseType === 'uint16') {
-            return $value ? new U16Value((int)$value) : new NothingValue();
-        }
-        else if ($baseType === 'uint32') {
-            return $value ? new U32Value((int)$value) : new NothingValue();
-        }
-        else if ($baseType === 'uint64') {
-            return $value ? new U64Value(BigInteger::of($value)) : new NothingValue();
-        }
-        else if ($baseType === 'biguint') {
-            return $value ? new BigUIntValue(BigInteger::of($value)) : new NothingValue();
-        }
-        else if ($baseType === 'bool') {
-            return new BooleanValue($value === true || $value === 'true');
-        }
-        else if ($baseType === 'address') {
-            return $value ? new AddressValue(Address::newFromBech32($value)) : new NothingValue();
-        }
-        else if ($baseType === 'token') {
-            return $value ? new TokenIdentifierValue($value) : new NothingValue();
-        }
-        else if ($baseType === 'hex') {
-            return $value ? BytesValue::fromHex($value) : new NothingValue();
-        }
-        else if ($baseType === 'codemeta') {
-            return new CodeMetadataValue(CodeMetadata::fromBuffer(hex2bin($value)));
-        }
-        else if ($baseType === 'esdt') {
-            return new Struct($this->nativeToType('esdt'), [
-                new Field(new TokenIdentifierValue($value->token->identifier), 'token_identifier'),
-                new Field(new U64Value($value->token->nonce), 'token_nonce'),
-                new Field(new BigUIntValue($value->amount), 'amount'),
-            ]);
-        }
-
-        throw new \Exception("WarpArgSerializer (nativeToTyped): Unsupported input type: {$type}");
+        $stringValue = $this->nativeToString($type, $value);
+        return $this->stringToTyped($stringValue);
     }
 
     public function typedToNative(TypedValue $value): array
     {
-        if ($value->hasClassOrSuperclass(OptionValue::ClassName)) {
-            if (!$value->isSet()) {
-                return ['option', null];
-            }
-            [$type, $val] = $this->typedToNative($value->getTypedValue());
-            return ["option:{$type}", $val];
-        }
-        else if ($value->hasClassOrSuperclass(OptionalValue::ClassName)) {
-            if (!$value->isSet()) {
-                return ['optional', null];
-            }
-            [$type, $val] = $this->typedToNative($value->getTypedValue());
-            return ["optional:{$type}", $val];
-        }
-        else if ($value->hasClassOrSuperclass(ListValue::ClassName)) {
-            $items = $value->getItems();
-            $types = array_map(fn($item) => $this->typedToNative($item)[0], $items);
-            $type = $types[0];
-            $values = array_map(fn($item) => $this->typedToNative($item)[1], $items);
-            return ["list:{$type}", implode(',', $values)];
-        }
-        else if ($value->hasClassOrSuperclass(VariadicValue::ClassName)) {
-            $items = $value->getItems();
-            $types = array_map(fn($item) => $this->typedToNative($item)[0], $items);
-            $type = $types[0];
-            $values = array_map(fn($item) => $this->typedToNative($item)[1], $items);
-            return ["variadic:{$type}", implode(',', $values)];
-        }
-        else if ($value->hasClassOrSuperclass(CompositeValue::ClassName)) {
-            $items = $value->getItems();
-            $types = array_map(fn($item) => $this->typeToNative($item->getType()), $items);
-            $values = array_map(fn($item) => $item->valueOf(), $items);
-            $rawTypes = implode('|', $types);
-            $rawValues = implode('|', $values);
-            return ["composite:{$rawTypes}", $rawValues];
-        }
-        else if ($value->hasClassOrSuperclass(BigUIntValue::ClassName)) {
-            return ['biguint', (string) $value->valueOf()];
-        }
-        else if ($value->hasClassOrSuperclass(U8Value::ClassName)) {
-            return ['uint8', $value->valueOf()->toInt()];
-        }
-        else if ($value->hasClassOrSuperclass(U16Value::ClassName)) {
-            return ['uint16', $value->valueOf()->toInt()];
-        }
-        else if ($value->hasClassOrSuperclass(U32Value::ClassName)) {
-            return ['uint32', $value->valueOf()->toInt()];
-        }
-        else if ($value->hasClassOrSuperclass(U64Value::ClassName)) {
-            return ['uint64', (string) $value->valueOf()];
-        }
-        else if ($value->hasClassOrSuperclass(StringValue::ClassName)) {
-            return ['string', $value->valueOf()];
-        }
-        else if ($value->hasClassOrSuperclass(BooleanValue::ClassName)) {
-            return ['bool', $value->valueOf()];
-        }
-        else if ($value->hasClassOrSuperclass(AddressValue::ClassName)) {
-            return ['address', $value->valueOf()->bech32()];
-        }
-        else if ($value->hasClassOrSuperclass(TokenIdentifierValue::ClassName)) {
-            return ['token', $value->valueOf()];
-        }
-        else if ($value->hasClassOrSuperclass(BytesValue::ClassName)) {
-            return ['hex', bin2hex($value->valueOf())];
-        }
-        else if ($value->hasClassOrSuperclass(CodeMetadataValue::ClassName)) {
-            return ['codemeta', bin2hex($value->valueOf()->toBuffer())];
-        }
-        else if ($value->getType()->getName() === 'EsdtTokenPayment') {
-            $identifier = $value->getFieldValue('token_identifier');
-            $nonce = $value->getFieldValue('token_nonce');
-            $amount = $value->getFieldValue('amount');
-            $token = new Token(identifier: $identifier, nonce: BigInteger::of($nonce));
-            return ['esdt', new TokenTransfer(token: $token, amount: BigInteger::of($amount))];
-        }
-
-        throw new \Exception("WarpArgSerializer (typedToNative): Unsupported input type: " . $value->getClassName());
+        $stringValue = $this->typedToString($value);
+        return $this->stringToNative($stringValue);
     }
 
     public function typedToString(TypedValue $value): string
     {
-        [$type, $val] = $this->typedToNative($value);
-        return $this->nativeToString($type, $val);
+        if ($value->hasClassOrSuperclass(OptionValue::ClassName)) {
+            if (!($value instanceof OptionValue && $value->isSet())) {
+                return 'option:null';
+            }
+            $result = $this->typedToString($value->getTypedValue());
+            return "option:{$result}";
+        }
+        if ($value->hasClassOrSuperclass(OptionalValue::ClassName)) {
+            if (!($value instanceof OptionalValue && $value->isSet())) {
+                return 'optional:null';
+            }
+            $result = $this->typedToString($value->getTypedValue());
+            return "optional:{$result}";
+        }
+        if ($value->hasClassOrSuperclass(ListValue::ClassName)) {
+            $items = $value->getItems();
+            $types = array_map(fn($item) => explode(ParamsSeparator, $this->typedToString($item))[0], $items);
+            $type = $types[0];
+            $values = array_map(fn($item) => explode(ParamsSeparator, $this->typedToString($item))[1], $items);
+            return "list:{$type}:" . implode(',', $values);
+        }
+        if ($value->hasClassOrSuperclass(VariadicValue::ClassName)) {
+            $items = $value->getItems();
+            $types = array_map(fn($item) => explode(ParamsSeparator, $this->typedToString($item))[0], $items);
+            $type = $types[0];
+            $values = array_map(fn($item) => explode(ParamsSeparator, $this->typedToString($item))[1], $items);
+            return "variadic:{$type}:" . implode(',', $values);
+        }
+        if ($value->hasClassOrSuperclass(CompositeValue::ClassName)) {
+            $items = $value->getItems();
+            $types = array_map(fn($item) => explode(ParamsSeparator, $this->typedToString($item))[0], $items);
+            $values = array_map(fn($item) => explode(ParamsSeparator, $this->typedToString($item))[1], $items);
+            $rawTypes = implode(CompositeSeparator, $types);
+            $rawValues = implode(CompositeSeparator, $values);
+            return "composite({$rawTypes}):{$rawValues}";
+        }
+        if ($value->hasClassOrSuperclass(BigUIntValue::ClassName)) {
+            return 'biguint:' . BigInteger::of($value->valueOf());
+        }
+        if ($value->hasClassOrSuperclass(U8Value::ClassName)) {
+            return 'uint8:' . $value->valueOf();
+        }
+        if ($value->hasClassOrSuperclass(U16Value::ClassName)) {
+            return 'uint16:' . $value->valueOf();
+        }
+        if ($value->hasClassOrSuperclass(U32Value::ClassName)) {
+            return 'uint32:' . $value->valueOf();
+        }
+        if ($value->hasClassOrSuperclass(U64Value::ClassName)) {
+            return 'uint64:' . BigInteger::of($value->valueOf());
+        }
+        if ($value->hasClassOrSuperclass(StringValue::ClassName)) {
+            return 'string:' . $value->valueOf();
+        }
+        if ($value->hasClassOrSuperclass(BooleanValue::ClassName)) {
+            return 'bool:' . ($value->valueOf() ? 'true' : 'false');
+        }
+        if ($value->hasClassOrSuperclass(AddressValue::ClassName)) {
+            return 'address:' . $value->valueOf()->bech32();
+        }
+        if ($value->hasClassOrSuperclass(TokenIdentifierValue::ClassName)) {
+            return 'token:' . $value->valueOf();
+        }
+        if ($value->hasClassOrSuperclass(BytesValue::ClassName)) {
+            return 'hex:' . bin2hex($value->valueOf());
+        }
+        if ($value->hasClassOrSuperclass(CodeMetadataValue::ClassName)) {
+            return 'codemeta:' . bin2hex($value->valueOf()->toBuffer());
+        }
+        if ($value->getType()->getName() === 'EsdtTokenPayment') {
+            $identifier = $value->getFieldValue('token_identifier');
+            $nonce = $value->getFieldValue('token_nonce');
+            $amount = $value->getFieldValue('amount');
+            return "esdt:{$identifier}|{$nonce}|{$amount}";
+        }
+
+        throw new \Exception("WarpArgSerializer (typedToString): Unsupported input type: " . $value->getClassName());
     }
 
     public function stringToNative(string $value): array
     {
-        $parts = explode(':', $value);
+        $parts = explode(ParamsSeparator, $value);
         $baseType = $parts[0];
-        $val = implode(':', array_slice($parts, 1));
+        $val = implode(ParamsSeparator, array_slice($parts, 1));
 
         if ($baseType === 'option') {
-            [$baseType, $baseValue] = explode(':', $val);
+            [$baseType, $baseValue] = explode(ParamsSeparator, $val);
             return ["option:{$baseType}", $baseValue ?: null];
-        } elseif ($baseType === 'optional') {
-            [$baseType, $baseValue] = explode(':', $val);
+        }
+        if ($baseType === 'optional') {
+            [$baseType, $baseValue] = explode(ParamsSeparator, $val);
             return ["optional:{$baseType}", $baseValue ?: null];
-        } elseif ($baseType === 'list') {
-            $listParts = explode(':', $val);
-            $baseType = implode(':', array_slice($listParts, 0, -1));
+        }
+        if ($baseType === 'list') {
+            $listParts = explode(ParamsSeparator, $val);
+            $baseType = implode(ParamsSeparator, array_slice($listParts, 0, -1));
             $valuesRaw = end($listParts);
             $valuesStrings = $valuesRaw ? explode(',', $valuesRaw) : [];
             $values = array_map(fn($v) => $this->stringToNative("{$baseType}:{$v}")[1], $valuesStrings);
             return ["list:{$baseType}", $values];
-        } elseif ($baseType === 'variadic') {
-            $variadicParts = explode(':', $val);
-            $baseType = implode(':', array_slice($variadicParts, 0, -1));
+        }
+        if ($baseType === 'variadic') {
+            $variadicParts = explode(ParamsSeparator, $val);
+            $baseType = implode(ParamsSeparator, array_slice($variadicParts, 0, -1));
             $valuesRaw = end($variadicParts);
             $valuesStrings = $valuesRaw ? explode(',', $valuesRaw) : [];
             $values = array_map(fn($v) => $this->stringToNative("{$baseType}:{$v}")[1], $valuesStrings);
             return ["variadic:{$baseType}", $values];
-        } elseif ($baseType === 'composite') {
-            [$baseType, $valuesRaw] = explode(':', $val);
-            $rawTypes = explode('|', $baseType);
-            $valuesStrings = explode('|', $valuesRaw);
-            $values = array_map(fn($val, $index) => $this->stringToNative("{$rawTypes[$index]}:{$val}")[1], $valuesStrings, array_keys($valuesStrings));
-            return ["composite:{$baseType}", $values];
-        } elseif ($baseType === 'string') {
+        }
+        if (str_starts_with($baseType, 'composite')) {
+            preg_match('/\(([^)]+)\)/', $baseType, $matches);
+            $rawTypes = explode(CompositeSeparator, $matches[1]);
+            $valuesStrings = explode(CompositeSeparator, $val);
+            $values = array_map(
+                fn($val, $index) => $this->stringToNative("{$rawTypes[$index]}:{$val}")[1],
+                $valuesStrings,
+                array_keys($valuesStrings)
+            );
+            return [$baseType, $values];
+        }
+        if ($baseType === 'string') {
             return [$baseType, $val];
-        } elseif (in_array($baseType, ['uint8', 'uint16', 'uint32'])) {
-            return [$baseType, (int) $val];
-        } elseif ($baseType === 'uint64' || $baseType === 'biguint') {
+        }
+        if (in_array($baseType, ['uint8', 'uint16', 'uint32'])) {
+            return [$baseType, (int)$val];
+        }
+        if ($baseType === 'uint64' || $baseType === 'biguint') {
             return [$baseType, BigInteger::of($val ?: '0')];
-        } elseif ($baseType === 'bool') {
+        }
+        if ($baseType === 'bool') {
             return [$baseType, $val === 'true'];
-        } elseif ($baseType === 'address') {
+        }
+        if ($baseType === 'address') {
             return [$baseType, $val];
-        } elseif ($baseType === 'token') {
+        }
+        if ($baseType === 'token') {
             return [$baseType, $val];
-        } elseif ($baseType === 'hex') {
+        }
+        if ($baseType === 'hex') {
             return [$baseType, $val];
-        } elseif ($baseType === 'codemeta') {
+        }
+        if ($baseType === 'codemeta') {
             return [$baseType, $val];
-        } elseif ($baseType === 'esdt') {
-            [$identifier, $nonce, $amount] = explode('|', $val);
+        }
+        if ($baseType === 'esdt') {
+            [$identifier, $nonce, $amount] = explode(CompositeSeparator, $val);
             return [$baseType, new TokenTransfer(
                 token: new Token(identifier: $identifier, nonce: BigInteger::of($nonce)),
                 amount: BigInteger::of($amount)
@@ -288,47 +233,111 @@ class WarpArgSerializer
 
     public function stringToTyped(string $value): TypedValue
     {
-        [$type, $val] = $this->stringToNative($value);
+        $parts = explode(ParamsSeparator, $value);
+        $type = $parts[0];
+        $val = implode(ParamsSeparator, array_slice($parts, 1));
 
-        return $this->nativeToTyped($type, $val);
+        if ($type === 'option') {
+            $baseValue = $this->stringToTyped($val);
+            return $baseValue instanceof NothingValue
+                ? OptionValue::newMissingTyped($baseValue->getType())
+                : OptionValue::newProvided($baseValue);
+        }
+        if ($type === 'optional') {
+            $baseValue = $this->stringToTyped($val);
+            return $baseValue instanceof NothingValue
+                ? OptionalValue::newMissing()
+                : new OptionalValue(new OptionalType($baseValue->getType()), $baseValue);
+        }
+        if ($type === 'list') {
+            [$baseType, $listValues] = explode(ParamsSeparator, $val, 2);
+            $values = $listValues ? explode(',', $listValues) : [];
+            $typedValues = array_map(fn($v) => $this->stringToTyped("{$baseType}:{$v}"), $values);
+            return new ListValue(new ListType($this->nativeToType($baseType)), $typedValues);
+        }
+        if ($type === 'variadic') {
+            [$baseType, $listValues] = explode(ParamsSeparator, $val, 2);
+            $values = $listValues ? explode(',', $listValues) : [];
+            $typedValues = array_map(fn($v) => $this->stringToTyped("{$baseType}:{$v}"), $values);
+            return new VariadicValue(new VariadicType($this->nativeToType($baseType)), $typedValues);
+        }
+        if (str_starts_with($type, 'composite')) {
+            preg_match('/\(([^)]+)\)/', $type, $matches);
+            $baseType = $matches[1];
+            $rawValues = explode(CompositeSeparator, $val);
+            $rawTypes = explode(CompositeSeparator, $baseType);
+            $values = array_map(
+                fn($val, $i) => $this->stringToTyped("{$rawTypes[$i]}:{$val}"),
+                $rawValues,
+                array_keys($rawValues)
+            );
+            $types = array_map(fn($v) => $v->getType(), $values);
+            return new CompositeValue(new CompositeType(...$types), $values);
+        }
+        if ($type === 'string') {
+            return $val ? StringValue::fromUTF8($val) : new NothingValue();
+        }
+        if ($type === 'uint8') {
+            return $val ? new U8Value((int)$val) : new NothingValue();
+        }
+        if ($type === 'uint16') {
+            return $val ? new U16Value((int)$val) : new NothingValue();
+        }
+        if ($type === 'uint32') {
+            return $val ? new U32Value((int)$val) : new NothingValue();
+        }
+        if ($type === 'uint64') {
+            return $val ? new U64Value(BigInteger::of($val)) : new NothingValue();
+        }
+        if ($type === 'biguint') {
+            return $val ? new BigUIntValue(BigInteger::of($val)) : new NothingValue();
+        }
+        if ($type === 'bool') {
+            return new BooleanValue(is_bool($val) ? $val : $val === 'true');
+        }
+        if ($type === 'address') {
+            return $val ? new AddressValue(Address::newFromBech32($val)) : new NothingValue();
+        }
+        if ($type === 'token') {
+            return $val ? new TokenIdentifierValue($val) : new NothingValue();
+        }
+        if ($type === 'hex') {
+            return $val ? BytesValue::fromHex($val) : new NothingValue();
+        }
+        if ($type === 'codemeta') {
+            return new CodeMetadataValue(CodeMetadata::fromBuffer(hex2bin($val)));
+        }
+        if ($type === 'esdt') {
+            $parts = explode(CompositeSeparator, $val);
+            return new Struct($this->nativeToType('esdt'), [
+                new Field(new TokenIdentifierValue($parts[0]), 'token_identifier'),
+                new Field(new U64Value(BigInteger::of($parts[1])), 'token_nonce'),
+                new Field(new BigUIntValue(BigInteger::of($parts[2])), 'amount'),
+            ]);
+        }
+
+        throw new \Exception("WarpArgSerializer (stringToTyped): Unsupported input type: {$type}");
     }
 
     public function nativeToType(string $type): Type
     {
-        if ($type === 'string') {
-            return new StringType();
+        if (str_starts_with($type, 'composite')) {
+            preg_match('/\(([^)]+)\)/', $type, $matches);
+            $rawTypes = explode(CompositeSeparator, $matches[1]);
+            return new CompositeType(...array_map(fn($t) => $this->nativeToType($t), $rawTypes));
         }
-        else if ($type === 'uint8') {
-            return new U8Type();
-        }
-        else if ($type === 'uint16') {
-            return new U16Type();
-        }
-        else if ($type === 'uint32') {
-            return new U32Type();
-        }
-        else if ($type === 'uint64') {
-            return new U64Type();
-        }
-        else if ($type === 'biguint') {
-            return new BigUIntType();
-        }
-        else if ($type === 'bool') {
-            return new BooleanType();
-        }
-        else if ($type === 'address') {
-            return new AddressType();
-        }
-        else if ($type === 'token') {
-            return new TokenIdentifierType();
-        }
-        else if ($type === 'hex') {
-            return new BytesType();
-        }
-        else if ($type === 'codemeta') {
-            return new CodeMetadataType();
-        }
-        else if ($type === 'esdt') {
+        if ($type === 'string') return new StringType();
+        if ($type === 'uint8') return new U8Type();
+        if ($type === 'uint16') return new U16Type();
+        if ($type === 'uint32') return new U32Type();
+        if ($type === 'uint64') return new U64Type();
+        if ($type === 'biguint') return new BigUIntType();
+        if ($type === 'bool') return new BooleanType();
+        if ($type === 'address') return new AddressType();
+        if ($type === 'token') return new TokenIdentifierType();
+        if ($type === 'hex') return new BytesType();
+        if ($type === 'codemeta') return new CodeMetadataType();
+        if ($type === 'esdt' || $type === 'nft') {
             return new StructType('EsdtTokenPayment', [
                 new FieldDefinition('token_identifier', '', new TokenIdentifierType()),
                 new FieldDefinition('token_nonce', '', new U64Type()),
@@ -352,8 +361,8 @@ class WarpArgSerializer
         if ($type instanceof TokenIdentifierType) return 'token';
         if ($type instanceof BytesType) return 'hex';
         if ($type instanceof CodeMetadataType) return 'codemeta';
-        if ($type instanceof StructType && $type->getName() === 'EsdtTokenPayment') return 'esdt';
+        if ($type instanceof StructType && $type->getClassName() === 'EsdtTokenPayment') return 'esdt';
 
-        throw new \Exception("WarpArgSerializer (typeToNative): Unsupported input type: " . $type->getName());
+        throw new \Exception("WarpArgSerializer (typeToNative): Unsupported input type: " . $type->getClassName());
     }
 }
