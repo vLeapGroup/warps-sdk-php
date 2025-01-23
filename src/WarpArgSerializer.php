@@ -162,11 +162,11 @@ class WarpArgSerializer
         $val = implode(ParamsSeparator, array_slice($parts, 1));
 
         if ($baseType === 'option') {
-            [$baseType, $baseValue] = explode(ParamsSeparator, $val);
+            [$baseType, $baseValue] = str_contains($val, ParamsSeparator) ? explode(ParamsSeparator, $val) : [$val, null];
             return ["option:{$baseType}", $baseValue ?: null];
         }
         if ($baseType === 'optional') {
-            [$baseType, $baseValue] = explode(ParamsSeparator, $val);
+            [$baseType, $baseValue] = str_contains($val, ParamsSeparator) ? explode(ParamsSeparator, $val) : [$val, null];
             return ["optional:{$baseType}", $baseValue ?: null];
         }
         if ($baseType === 'list') {
@@ -187,6 +187,9 @@ class WarpArgSerializer
         }
         if (str_starts_with($baseType, 'composite')) {
             preg_match('/\(([^)]+)\)/', $baseType, $matches);
+            if (!isset($matches[1])) {
+                throw new \Exception("WarpArgSerializer (stringToNative): Invalid composite type: {$baseType}");
+            }
             $rawTypes = explode(CompositeSeparator, $matches[1]);
             $valuesStrings = explode(CompositeSeparator, $val);
             $values = array_map(
@@ -323,6 +326,9 @@ class WarpArgSerializer
     {
         if (str_starts_with($type, 'composite')) {
             preg_match('/\(([^)]+)\)/', $type, $matches);
+            if (!isset($matches[1])) {
+                throw new \Exception("WarpArgSerializer (nativeToType): Invalid composite type: {$type}");
+            }
             $rawTypes = explode(CompositeSeparator, $matches[1]);
             return new CompositeType(...array_map(fn($t) => $this->nativeToType($t), $rawTypes));
         }
