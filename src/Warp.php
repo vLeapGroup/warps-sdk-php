@@ -11,7 +11,7 @@ class Warp
         public readonly string $name,
         public readonly string $title,
         public readonly ?string $description,
-        public readonly string $preview,
+        public readonly ?string $preview,
         /** @var Collection<IWarpAction> */
         public readonly Collection $actions = new Collection,
     ) {

@@ -29,7 +29,7 @@ final class WarpTransformer
             name: $data['name'],
             title: $data['title'],
             description: $data['description'],
-            preview: $data['preview'],
+            preview: $data['preview'] ?? null,
             actions: collect($data['actions'])
                 ->map(fn (array $action) => ActionTransformer::fromArray($action))
                 ->values(),
