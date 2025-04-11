@@ -32,6 +32,7 @@ final class ContractActionTransformer
             args: $data['args'],
             gasLimit: BigInteger::of($data['gasLimit'] ?? 0),
             value: BigInteger::of($data['value'] ?? 0),
+            inputs: collect($data['inputs'] ?? []),
         );
     }
 }

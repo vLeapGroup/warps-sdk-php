@@ -29,6 +29,7 @@ final class CollectActionTransformer
                 method: $data['destination']['method'] ?? throw new InvalidArgumentException('collect action destination method is required'),
                 headers: $data['destination']['headers'] ?? [],
             ),
+            inputs: collect($data['inputs'] ?? []),
             next: $data['next'] ?? null,
         );
     }
