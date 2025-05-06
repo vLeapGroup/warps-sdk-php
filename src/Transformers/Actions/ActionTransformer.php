@@ -21,6 +21,7 @@ final class ActionTransformer
     public static function fromArray(array $data): IWarpAction
     {
         return match ($data['type']) {
+            ActionType::Transfer->value => TransferActionTransformer::fromArray($data),
             ActionType::Contract->value => ContractActionTransformer::fromArray($data),
             ActionType::Query->value => QueryActionTransformer::fromArray($data),
             ActionType::Collect->value => CollectActionTransformer::fromArray($data),
