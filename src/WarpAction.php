@@ -24,8 +24,8 @@ class WarpAction
     public function contract(string|Address $address, ?string $endpoint, array $args, BigInteger $value, int|BigInteger $gasLimit = ContractAction::DEFAULT_GAS_LIMIT): ContractAction
     {
         $address = $address instanceof Address
-            ? $address
-            : Address::newFromBech32($address);
+            ? $address->bech32()
+            : $address;
 
         return new ContractAction($this->name, $this->description, $address, $endpoint, $args, BigInteger::of($value), BigInteger::of($gasLimit));
     }
@@ -33,8 +33,8 @@ class WarpAction
     public function query(string|Address $address, string $func, array $args, ?string $abi = null): QueryAction
     {
         $address = $address instanceof Address
-            ? $address
-            : Address::newFromBech32($address);
+            ? $address->bech32()
+            : $address;
 
         return new QueryAction($this->name, $this->description, $address, $func, $args, $abi);
     }

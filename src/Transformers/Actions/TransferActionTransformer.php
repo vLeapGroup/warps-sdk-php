@@ -14,7 +14,7 @@ final class TransferActionTransformer
             'type' => $action->getType()->value,
             'label' => $action->label,
             'description' => $action->description,
-            'address' => $action->address->bech32(),
+            'address' => $action->address,
             'data' => $action->data,
             'value' => (string) $action->value,
         ];
@@ -25,7 +25,7 @@ final class TransferActionTransformer
         return new TransferAction(
             label: $data['label'],
             description: $data['description'] ?? null,
-            address: Address::newFromBech32($data['address']),
+            address: $data['address'],
             data: $data['data'] ?? null,
             value: BigInteger::of($data['value'] ?? 0),
             inputs: collect($data['inputs'] ?? []),

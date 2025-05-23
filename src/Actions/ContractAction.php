@@ -2,7 +2,6 @@
 
 namespace Vleap\Warps\Actions;
 
-use MultiversX\Address;
 use Brick\Math\BigInteger;
 use Illuminate\Support\Collection;
 
@@ -13,7 +12,7 @@ final class ContractAction implements IWarpAction
     public function __construct(
         public readonly string $label,
         public readonly ?string $description,
-        public readonly Address $address,
+        public readonly string $address,
         public readonly ?string $func,
         public readonly array $args,
         public readonly ?BigInteger $value,

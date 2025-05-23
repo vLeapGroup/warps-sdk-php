@@ -13,7 +13,7 @@ final class QueryActionTransformer
             'type' => $action->getType()->value,
             'label' => $action->label,
             'description' => $action->description,
-            'address' => $action->address->bech32(),
+            'address' => $action->address,
             'func' => $action->func,
             'args' => $action->args,
             'abi' => $action->abi,
@@ -25,7 +25,7 @@ final class QueryActionTransformer
         return new QueryAction(
             label: $data['label'],
             description: $data['description'] ?? null,
-            address: Address::newFromBech32($data['address']),
+            address: $data['address'],
             func: $data['func'],
             args: $data['args'],
             abi: $data['abi'],

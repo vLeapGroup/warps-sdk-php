@@ -14,7 +14,7 @@ final class ContractActionTransformer
             'type' => $action->getType()->value,
             'label' => $action->label,
             'description' => $action->description,
-            'address' => $action->address->bech32(),
+            'address' => $action->address,
             'func' => $action->func,
             'args' => $action->args,
             'value' => (string) $action->value,
@@ -27,7 +27,7 @@ final class ContractActionTransformer
         return new ContractAction(
             label: $data['label'],
             description: $data['description'] ?? null,
-            address: Address::newFromBech32($data['address']),
+            address: $data['address'],
             func: $data['func'],
             args: $data['args'],
             gasLimit: BigInteger::of($data['gasLimit'] ?? 0),
