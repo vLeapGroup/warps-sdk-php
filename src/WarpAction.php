@@ -2,11 +2,15 @@
 
 namespace Vleap\Warps;
 
-use Brick\Math\BigInteger;
 use MultiversX\Address;
-use Vleap\Warps\Actions\ContractAction;
+use Brick\Math\BigInteger;
+use Illuminate\Support\Collection;
 use Vleap\Warps\Actions\LinkAction;
 use Vleap\Warps\Actions\QueryAction;
+use Vleap\Warps\Actions\CollectAction;
+use Vleap\Warps\Actions\ContractAction;
+use Vleap\Warps\Actions\TransferAction;
+use Vleap\Warps\Actions\CollectActionDestination;
 
 class WarpAction
 {
@@ -37,6 +41,20 @@ class WarpAction
             : $address;
 
         return new QueryAction($this->name, $this->description, $address, $func, $args, $abi);
+    }
+
+    public function transfer(string|Address $address, ?string $data, BigInteger $value): TransferAction
+    {
+        $address = $address instanceof Address
+            ? $address->bech32()
+            : $address;
+
+        return new TransferAction($this->name, $this->description, $address, $data, $value);
+    }
+
+    public function collect(CollectActionDestination $destination, Collection $inputs, ?string $next = null): CollectAction
+    {
+        return new CollectAction($this->name, $this->description, $destination, $inputs, $next);
     }
 
     public function link(string $url): LinkAction
