@@ -6,8 +6,8 @@ final class CollectActionDestination
 {
     public function __construct(
         public readonly string $url,
-        public readonly string $method,
-        public readonly array $headers,
+        public readonly ?string $method,
+        public readonly ?array $headers,
     ) {
     }
 

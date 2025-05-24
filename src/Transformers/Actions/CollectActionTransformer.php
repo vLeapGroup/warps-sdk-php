@@ -26,8 +26,8 @@ final class CollectActionTransformer
             description: $data['description'] ?? null,
             destination: new CollectActionDestination(
                 url: $data['destination']['url'] ?? throw new InvalidArgumentException('collect action destination url is required'),
-                method: $data['destination']['method'] ?? throw new InvalidArgumentException('collect action destination method is required'),
-                headers: $data['destination']['headers'] ?? [],
+                method: $data['destination']['method'] ?? null,
+                headers: $data['destination']['headers'] ?? null,
             ),
             inputs: collect($data['inputs'] ?? []),
             next: $data['next'] ?? null,
