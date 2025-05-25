@@ -20,7 +20,7 @@ final class LinkActionTransformer
     {
         return new LinkAction(
             label: $data['label'],
-            description: $data['description'],
+            description: $data['description'] ?? null,
             url: $data['url'],
         );
     }
