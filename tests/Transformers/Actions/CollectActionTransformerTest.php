@@ -7,7 +7,7 @@ use Vleap\Warps\Transformers\Actions\CollectActionTransformer;
 
 it('transforms a collect action', function () {
     $action = WarpAction::create('test action')
-        ->collect(new CollectActionDestination('https://vleap.io', 'POST', ['Authorization' => 'Bearer token']), collect());
+        ->collect(new CollectActionDestination('https://vleap.ai', 'POST', ['Authorization' => 'Bearer token']), collect());
 
     $actual = CollectActionTransformer::toArray($action);
 
@@ -16,7 +16,7 @@ it('transforms a collect action', function () {
         'label' => 'test action',
         'description' => null,
         'destination' => [
-            'url' => 'https://vleap.io',
+            'url' => 'https://vleap.ai',
             'method' => 'POST',
             'headers' => ['Authorization' => 'Bearer token'],
         ],

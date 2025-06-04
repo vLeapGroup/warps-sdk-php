@@ -8,7 +8,7 @@ use Vleap\Warps\Transformers\Actions\QueryActionTransformer;
 
 it('transforms a contract query', function () {
     $address = Address::zero();
-    $action = WarpAction::create('test action')->query($address, 'test endpoint', ['test arg'], 'https://vleap.io/abi.json');
+    $action = WarpAction::create('test action')->query($address, 'test endpoint', ['test arg'], 'https://vleap.ai/abi.json');
 
     $actual = QueryActionTransformer::toArray($action);
 
@@ -19,6 +19,6 @@ it('transforms a contract query', function () {
         'address' => 'erd1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq6gq4hu',
         'func' => 'test endpoint',
         'args' => ['test arg'],
-        'abi' => 'https://vleap.io/abi.json',
+        'abi' => 'https://vleap.ai/abi.json',
     ]);
 });
