@@ -25,7 +25,7 @@ final class TransferActionTransformer
         return new TransferAction(
             label: $data['label'],
             description: $data['description'] ?? null,
-            address: $data['address'],
+            address: $data['address'] ?? null,
             data: $data['data'] ?? null,
             value: BigInteger::of($data['value'] ?? 0),
             inputs: collect($data['inputs'] ?? []),
