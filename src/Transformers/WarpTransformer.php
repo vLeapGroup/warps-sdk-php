@@ -28,7 +28,7 @@ final class WarpTransformer
             protocol: $data['protocol'],
             name: $data['name'],
             title: $data['title'],
-            description: $data['description'],
+            description: $data['description'] ?? null,
             preview: $data['preview'] ?? null,
             actions: collect($data['actions'])
                 ->map(fn (array $action) => ActionTransformer::fromArray($action))

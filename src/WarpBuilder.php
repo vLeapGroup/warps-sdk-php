@@ -11,8 +11,8 @@ class WarpBuilder
 {
     public string $protocol;
     public string $name;
-    public string $title;
-    public ?string $description;
+    public string|array $title;
+    public string|array|null $description;
     public string $preview;
     /** @var Collection<IWarpAction> */
     public Collection $actions;
@@ -44,14 +44,14 @@ class WarpBuilder
         return $this;
     }
 
-    public function setTitle(string $title): WarpBuilder
+    public function setTitle(string|array $title): WarpBuilder
     {
         $this->title = $title;
 
         return $this;
     }
 
-    public function setDescription(string $description): WarpBuilder
+    public function setDescription(string|array|null $description): WarpBuilder
     {
         $this->description = $description;
 
@@ -81,7 +81,7 @@ class WarpBuilder
         return new Warp($this->protocol, $this->name, $this->title, $this->description, $this->preview, $this->actions);
     }
 
-    private function ensureIsSet(string $value, string $message): void
+    private function ensureIsSet(string|array $value, string $message): void
     {
         if (empty($value)) throw new Exception($message);
     }
