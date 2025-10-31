@@ -8,8 +8,8 @@ use Illuminate\Support\Collection;
 final class TransferAction implements IWarpAction
 {
     public function __construct(
-        public readonly string $label,
-        public readonly ?string $description,
+        public readonly string|array $label,
+        public readonly string|array|null $description,
         public readonly ?string $address,
         public readonly ?string $data,
         public readonly ?BigInteger $value,

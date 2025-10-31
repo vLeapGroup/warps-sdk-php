@@ -8,8 +8,8 @@ use Illuminate\Support\Collection;
 final class CollectAction implements IWarpAction
 {
     public function __construct(
-        public readonly string $label,
-        public readonly ?string $description,
+        public readonly string|array $label,
+        public readonly string|array|null $description,
         public readonly CollectActionDestination $destination,
         /** @var Collection<WarpActionInput> */
         public readonly Collection $inputs = new Collection,

@@ -15,12 +15,12 @@ use Vleap\Warps\Actions\CollectActionDestination;
 class WarpAction
 {
     public function __construct(
-        public readonly string $name,
-        public readonly ?string $description = null,
+        public readonly string|array $name,
+        public readonly string|array|null $description = null,
     ) {
     }
 
-    public static function create(string $name, ?string $description = null): WarpAction
+    public static function create(string|array $name, string|array|null $description = null): WarpAction
     {
         return new WarpAction($name, $description);
     }

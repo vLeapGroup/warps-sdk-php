@@ -10,8 +10,8 @@ final class ContractAction implements IWarpAction
     const DEFAULT_GAS_LIMIT = 10_000_000;
 
     public function __construct(
-        public readonly string $label,
-        public readonly ?string $description,
+        public readonly string|array $label,
+        public readonly string|array|null $description,
         public readonly string $address,
         public readonly ?string $func,
         public readonly array $args,
