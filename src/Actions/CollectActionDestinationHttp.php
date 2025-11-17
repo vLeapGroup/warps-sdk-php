@@ -2,7 +2,7 @@
 
 namespace Vleap\Warps\Actions;
 
-final class CollectActionDestination
+final class CollectActionDestinationHttp
 {
     public function __construct(
         public readonly string $url,

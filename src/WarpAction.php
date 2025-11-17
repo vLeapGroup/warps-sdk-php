@@ -10,7 +10,7 @@ use Vleap\Warps\Actions\QueryAction;
 use Vleap\Warps\Actions\CollectAction;
 use Vleap\Warps\Actions\ContractAction;
 use Vleap\Warps\Actions\TransferAction;
-use Vleap\Warps\Actions\CollectActionDestination;
+use Vleap\Warps\Actions\CollectActionDestinationHttp;
 
 class WarpAction
 {
@@ -52,7 +52,7 @@ class WarpAction
         return new TransferAction($this->name, $this->description, $address, $data, $value);
     }
 
-    public function collect(CollectActionDestination $destination, Collection $inputs, ?string $next = null): CollectAction
+    public function collect(string|CollectActionDestinationHttp|null $destination, Collection $inputs, ?string $next = null): CollectAction
     {
         return new CollectAction($this->name, $this->description, $destination, $inputs, $next);
     }
