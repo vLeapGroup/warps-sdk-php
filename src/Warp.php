@@ -14,6 +14,7 @@ class Warp
         public readonly ?string $preview,
         /** @var Collection<IWarpAction> */
         public readonly Collection $actions = new Collection,
+        public readonly ?WarpMeta $meta = null,
     ) {
     }
 }
