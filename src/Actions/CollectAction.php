@@ -13,7 +13,7 @@ final class CollectAction implements IWarpAction
         public readonly string|CollectActionDestinationHttp|null $destination,
         /** @var Collection<WarpActionInput> */
         public readonly Collection $inputs = new Collection,
-        public readonly ?string $next,
+        public readonly ?string $next = null,
     ) {
     }
 
