@@ -1,0 +1,23 @@
+{
+  "protocol": "warp:3.0.0",
+  "name": "Test Prompt",
+  "title": "Test Prompt Title",
+  "description": "Test Prompt Description",
+  "actions": [
+    {
+      "type": "prompt",
+      "label": "Generate Post",
+      "description": "Generates a post",
+      "prompt": "Create a post about {{TOPIC}}",
+      "inputs": [
+        {
+          "name": "Topic",
+          "as": "TOPIC",
+          "type": "string",
+          "source": "field",
+          "required": true
+        }
+      ]
+    }
+  ]
+}

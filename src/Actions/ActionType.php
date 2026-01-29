@@ -9,4 +9,5 @@ enum ActionType: string
     case Query = 'query';
     case Collect = 'collect';
     case Link = 'link';
+    case Prompt = 'prompt';
 }
