@@ -10,4 +10,7 @@ enum ActionType: string
     case Collect = 'collect';
     case Link = 'link';
     case Prompt = 'prompt';
+    case State = 'state';
+    case Mount = 'mount';
+    case Unmount = 'unmount';
 }

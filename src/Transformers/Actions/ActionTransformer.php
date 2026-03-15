@@ -2,8 +2,8 @@
 
 namespace Vleap\Warps\Transformers\Actions;
 
-use Exception;
 use Vleap\Warps\Actions\ActionType;
+use Vleap\Warps\Actions\GenericAction;
 use Vleap\Warps\Actions\IWarpAction;
 use Vleap\Warps\WarpAction;
 
@@ -18,6 +18,7 @@ final class ActionTransformer
             ActionType::Collect => CollectActionTransformer::toArray($action),
             ActionType::Link => LinkActionTransformer::toArray($action),
             ActionType::Prompt => PromptActionTransformer::toArray($action),
+            default => GenericActionTransformer::toArray($action),
         };
     }
 
@@ -30,7 +31,7 @@ final class ActionTransformer
             ActionType::Collect->value => CollectActionTransformer::fromArray($data),
             ActionType::Link->value => LinkActionTransformer::fromArray($data),
             ActionType::Prompt->value => PromptActionTransformer::fromArray($data),
-            default => throw new Exception("unsupported action type: {$data['type']}"),
+            default => GenericActionTransformer::fromArray($data),
         };
     }
 }
