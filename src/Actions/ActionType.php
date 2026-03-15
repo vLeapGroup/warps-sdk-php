@@ -8,6 +8,7 @@ enum ActionType: string
     case Contract = 'contract';
     case Query = 'query';
     case Collect = 'collect';
+    case Compute = 'compute';
     case Link = 'link';
     case Prompt = 'prompt';
     case State = 'state';
