@@ -14,4 +14,5 @@ enum ActionType: string
     case State = 'state';
     case Mount = 'mount';
     case Unmount = 'unmount';
+    case Inline = 'inline';
 }
