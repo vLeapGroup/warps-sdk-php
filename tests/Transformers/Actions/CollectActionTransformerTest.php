@@ -1,5 +1,6 @@
 <?php
 
+use Vleap\Warps\Next\WarpNextConfig;
 use Vleap\Warps\WarpAction;
 use Vleap\Warps\Actions\ActionType;
 use Vleap\Warps\Actions\CollectAction;
@@ -87,7 +88,7 @@ it('creates a collect action from array with CollectActionDestinationHttp', func
     expect($action->destination->url)->toBe('https://vleap.ai');
     expect($action->destination->method)->toBe('POST');
     expect($action->destination->headers)->toBe(['Authorization' => 'Bearer token']);
-    expect($action->next)->toBe('next-action');
+    expect($action->next?->success)->toBe('next-action');
 });
 
 it('creates a collect action from array with string destination', function () {
@@ -146,7 +147,7 @@ it('round-trips collect action', function () {
         description: 'test description',
         destination: new CollectActionDestinationHttp('https://vleap.ai', 'POST', ['Authorization' => 'Bearer token']),
         inputs: collect(),
-        next: 'next-action',
+        next: WarpNextConfig::fromRaw('next-action'),
     );
 
     $array = CollectActionTransformer::toArray($original);
@@ -158,5 +159,54 @@ it('round-trips collect action', function () {
     expect($restored->destination->url)->toBe($original->destination->url);
     expect($restored->destination->method)->toBe($original->destination->method);
     expect($restored->destination->headers)->toBe($original->destination->headers);
-    expect($restored->next)->toBe($original->next);
+    expect($restored->next?->success)->toBe($original->next?->success);
+});
+
+it('parses an object-form next into its success path', function () {
+    $action = CollectActionTransformer::fromArray([
+        'label' => 'form',
+        'destination' => 'https://example.com',
+        'inputs' => [],
+        'next' => ['success' => 'joai-loyalty-signup-email?name={{name}}&email={{field_2}}'],
+    ]);
+
+    expect($action->next)->toBeInstanceOf(WarpNextConfig::class);
+    expect($action->next?->success)->toBe('joai-loyalty-signup-email?name={{name}}&email={{field_2}}');
+    expect($action->next?->error)->toBeNull();
+});
+
+it('parses a config next with success and error paths', function () {
+    $action = CollectActionTransformer::fromArray([
+        'label' => 'form',
+        'destination' => null,
+        'inputs' => [],
+        'next' => ['success' => 'on-ok', 'error' => 'on-fail'],
+    ]);
+
+    expect($action->next?->success)->toBe('on-ok');
+    expect($action->next?->error)->toBe('on-fail');
+});
+
+it('round-trips an object-form next', function () {
+    $action = CollectActionTransformer::fromArray([
+        'label' => 'form',
+        'destination' => null,
+        'inputs' => [],
+        'next' => ['success' => 'joai-loyalty-signup-email?name={{name}}'],
+    ]);
+
+    $restored = CollectActionTransformer::fromArray(CollectActionTransformer::toArray($action));
+
+    expect($restored->next?->success)->toBe('joai-loyalty-signup-email?name={{name}}');
+});
+
+it('emits a plain string next as a success config on output', function () {
+    $action = CollectActionTransformer::fromArray([
+        'label' => 'form',
+        'destination' => null,
+        'inputs' => [],
+        'next' => 'next-action',
+    ]);
+
+    expect(CollectActionTransformer::toArray($action)['next'])->toBe(['success' => 'next-action']);
 });

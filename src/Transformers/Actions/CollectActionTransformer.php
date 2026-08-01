@@ -5,6 +5,7 @@ namespace Vleap\Warps\Transformers\Actions;
 use InvalidArgumentException;
 use Vleap\Warps\Actions\CollectAction;
 use Vleap\Warps\Actions\CollectActionDestinationHttp;
+use Vleap\Warps\Next\WarpNextConfig;
 
 final class CollectActionTransformer
 {
@@ -21,7 +22,7 @@ final class CollectActionTransformer
             'label' => $action->label,
             'description' => $action->description,
             'destination' => $destination,
-            'next' => $action->next,
+            'next' => $action->next?->toArray(),
         ];
     }
 
@@ -32,7 +33,7 @@ final class CollectActionTransformer
             description: $data['description'] ?? null,
             destination: self::getDestination($data),
             inputs: collect($data['inputs'] ?? []),
-            next: $data['next'] ?? null,
+            next: WarpNextConfig::fromRaw($data['next'] ?? null),
         );
     }
 

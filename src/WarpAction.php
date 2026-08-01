@@ -8,6 +8,7 @@ use Illuminate\Support\Collection;
 use Vleap\Warps\Actions\LinkAction;
 use Vleap\Warps\Actions\QueryAction;
 use Vleap\Warps\Actions\CollectAction;
+use Vleap\Warps\Next\WarpNextConfig;
 use Vleap\Warps\Actions\ContractAction;
 use Vleap\Warps\Actions\TransferAction;
 use Vleap\Warps\Actions\CollectActionDestinationHttp;
@@ -52,9 +53,9 @@ class WarpAction
         return new TransferAction($this->name, $this->description, $address, $data, $value);
     }
 
-    public function collect(string|CollectActionDestinationHttp|null $destination, Collection $inputs, ?string $next = null): CollectAction
+    public function collect(string|CollectActionDestinationHttp|null $destination, Collection $inputs, string|array|null $next = null): CollectAction
     {
-        return new CollectAction($this->name, $this->description, $destination, $inputs, $next);
+        return new CollectAction($this->name, $this->description, $destination, $inputs, WarpNextConfig::fromRaw($next));
     }
 
     public function link(string $url): LinkAction
