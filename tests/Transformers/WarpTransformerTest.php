@@ -171,6 +171,28 @@ it('creates a warp from array with meta without query', function () {
     expect($warp->meta->query)->toBeNull();
 });
 
+it('creates a warp from array with meta without creator', function () {
+    $data = [
+        'protocol' => 'warp:0.1.0',
+        'name' => 'test name',
+        'title' => 'test title',
+        'description' => null,
+        'preview' => null,
+        'actions' => [],
+        'meta' => [
+            'chain' => 'multiversx',
+            'identifier' => 'test-identifier',
+            'query' => null,
+            'hash' => 'test-hash',
+            'createdAt' => '2024-01-15T10:30:00+00:00',
+        ],
+    ];
+
+    $warp = WarpTransformer::fromArray($data);
+
+    expect($warp->meta->creator)->toBe('');
+});
+
 it('creates a warp from array without meta', function () {
     $data = [
         'protocol' => 'warp:0.1.0',

@@ -64,7 +64,7 @@ final class WarpTransformer
             identifier: $data['identifier'],
             query: $data['query'] ?? null,
             hash: $data['hash'],
-            creator: $data['creator'],
+            creator: $data['creator'] ?? '',
             createdAt: Carbon::parse($data['createdAt']),
         );
     }
